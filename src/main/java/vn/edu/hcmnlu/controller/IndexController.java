@@ -19,7 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import vn.edu.hcmnlu.bean.DocsMappping;
-import vn.edu.hcmnlu.contants.Contants;
+import vn.edu.hcmnlu.constants.Constants;
+import vn.edu.hcmnlu.elastic.ClientConnection;
 import vn.edu.hcmnlu.elastic.QueryCreation;
 import vn.edu.hcmnlu.upload.UploadService;
 
@@ -34,6 +35,9 @@ public class IndexController {
 	
 	@Autowired
     ServletContext context; 
+	
+	@Autowired
+	private ClientConnection clientConnection;
 	
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -56,7 +60,7 @@ public class IndexController {
 			e.printStackTrace();
 		}
 		QueryCreation query = new QueryCreation();
-		List<DocsMappping> data = query.responseData(Contants.INDICES, Contants.TYPE, keyword);
+		List<DocsMappping> data = query.responseData(clientConnection.getTransportClient(), Constants.INDICES, Constants.TYPE, keyword);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("list", data);
 		map.put("keyword", keyword);
@@ -68,12 +72,12 @@ public class IndexController {
 			@RequestParam("description") String description, @RequestParam("author") String author,
 			HttpServletRequest request) {
 		DocsMappping docs = new DocsMappping();
-		String rootPath = context.getRealPath("") + File.separator + Contants.RESOURCE_PATH + File.separator;
+		String rootPath = context.getRealPath("") + File.separator + Constants.RESOURCE_PATH + File.separator;
 		docs.url = uploadService.saveFile(file, rootPath, file.getOriginalFilename());
 		docs.author = author;
 		docs.title = title;
 		docs.description = description;
-		uploadService.indexDocumentFileToES(docs,file);
+		uploadService.indexDocumentFileToES(clientConnection.getTransportClient(), docs,file);
 		return "index";
 	}
 

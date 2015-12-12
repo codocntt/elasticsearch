@@ -42,10 +42,4 @@ public class IndicesOperations {
 		client.admin().indices().prepareRefresh(name).execute().actionGet();
 	}
 	
-	public static void main(String[] args) {
-		Client client = ClientConnection.getTransportClient();
-		IndicesOperations indices = new IndicesOperations(client);
-		System.out.println(indices.checkIndexExists("demo"));
-	}
-	
 }

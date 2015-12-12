@@ -14,4 +14,10 @@
 	<bean id="contents" class="org.springframework.core.io.ClassPathResource">
     	<constructor-arg value="classpath:path/config/template.txt"/>
 	</bean>
+	
+	<bean id="clientConnection" class="vn.edu.hcmnlu.elastic.ClientConnection">
+		<property name="clusterName" value="elasticsearch" />
+		<property name="clusterPort" value="9300"/>
+	</bean>
+	
 </beans>

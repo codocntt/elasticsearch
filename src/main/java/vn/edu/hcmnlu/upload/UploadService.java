@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.edu.hcmnlu.bean.DocsMappping;
-import vn.edu.hcmnlu.contants.Contants;
+import vn.edu.hcmnlu.constants.Constants;
 import vn.edu.hcmnlu.elastic.ClientConnection;
 import vn.edu.hcmnlu.elastic.DocumentOperations;
 import vn.edu.hcmnlu.elastic.IndicesOperations;
@@ -55,10 +55,9 @@ public class UploadService {
 
 	}
 
-	public boolean indexDocumentFileToES(DocsMappping docs, MultipartFile file) {
-		Client client = ClientConnection.getTransportClient();
+	public boolean indexDocumentFileToES(Client client, DocsMappping docs, MultipartFile file) {
 		IndicesOperations indices = new IndicesOperations(client);
-		if (!indices.checkIndexExists(Contants.INDICES)) {
+		if (!indices.checkIndexExists(Constants.INDICES)) {
 			// indices.createIndex(Contants.INDICES);
 			try {
 				// XContentBuilder mappingBuilder = jsonBuilder()
@@ -82,7 +81,7 @@ public class UploadService {
 				String settings = getFile("config/settings.json");
 				String templates = getFile("config/templates.json");
 				MappingOperations mappings = new MappingOperations(client);
-				mappings.createMappingTemplate(Contants.INDICES, templates, settings);
+				mappings.createMappingTemplate(Constants.INDICES, templates, settings);
 			} catch (IOException e) {
 				logger.error("ERROR:" + e.getMessage());
 				return false;
@@ -101,7 +100,7 @@ public class UploadService {
 			docs.filename = file.getOriginalFilename();
 			docs.typeofdocument = file.getContentType();
 			DocumentOperations docop = new DocumentOperations(client);
-			docop.insertDocument(Contants.INDICES, Contants.TYPE,
+			docop.insertDocument(Constants.INDICES, Constants.TYPE,
 					convertDocsToMap(docs));
 		} catch (IOException e) {
 			logger.error("ERROR:" + e.getMessage());

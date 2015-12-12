@@ -19,12 +19,9 @@ import vn.edu.hcmnlu.bean.DocsMappping;
 
 public class QueryCreation {
 	
-	public List<DocsMappping> responseData(String index, String type, String keyword) {
+	public List<DocsMappping> responseData(Client client, String index, String type, String keyword) {
 		
 		List<DocsMappping> arr = new ArrayList<DocsMappping>();
-		
-		// set properties of resource
-		Client client = ClientConnection.getTransportClient();
 		
 		// check exist of indices
 		IndicesOperations indices = new IndicesOperations(client);
