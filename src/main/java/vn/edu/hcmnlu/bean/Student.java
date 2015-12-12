@@ -1,7 +1,7 @@
 package vn.edu.hcmnlu.bean;
 
 
-public class DocsMappping{
+public class Student{
 	
 	public String id;
 	public String title;

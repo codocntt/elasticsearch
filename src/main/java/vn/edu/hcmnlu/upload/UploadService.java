@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import vn.edu.hcmnlu.bean.DocsMappping;
+import vn.edu.hcmnlu.bean.Student;
 import vn.edu.hcmnlu.constants.Constants;
 import vn.edu.hcmnlu.elastic.ClientConnection;
 import vn.edu.hcmnlu.elastic.DocumentOperations;
@@ -55,7 +55,7 @@ public class UploadService {
 
 	}
 
-	public boolean indexDocumentFileToES(Client client, DocsMappping docs, MultipartFile file) {
+	public boolean indexDocumentFileToES(Client client, Student docs, MultipartFile file) {
 		IndicesOperations indices = new IndicesOperations(client);
 		if (!indices.checkIndexExists(Constants.INDICES)) {
 			// indices.createIndex(Contants.INDICES);
@@ -109,7 +109,7 @@ public class UploadService {
 		return true;
 	}
 
-	private Map<String, Object> convertDocsToMap(DocsMappping docs) {
+	private Map<String, Object> convertDocsToMap(Student docs) {
 		Map<String, Object> maps = new HashMap<String, Object>();
 		Class<?> cls = docs.getClass();
 		Field fieldlist[] = cls.getDeclaredFields();

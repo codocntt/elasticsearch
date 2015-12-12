@@ -14,14 +14,14 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.highlight.HighlightField;
 
-import vn.edu.hcmnlu.bean.DocsMappping;
+import vn.edu.hcmnlu.bean.Student;
 
 
 public class QueryCreation {
 	
-	public List<DocsMappping> responseData(Client client, String index, String type, String keyword) {
+	public List<Student> responseData(Client client, String index, String type, String keyword) {
 		
-		List<DocsMappping> arr = new ArrayList<DocsMappping>();
+		List<Student> arr = new ArrayList<Student>();
 		
 		// check exist of indices
 		IndicesOperations indices = new IndicesOperations(client);
@@ -57,7 +57,7 @@ public class QueryCreation {
 			String title = maps.get("title").value();
 			String date = maps.get("date").value();
 			String author = maps.get("author").value();
-			DocsMappping p = new DocsMappping();
+			Student p = new Student();
 			p.id = hit.getId();
 			p.title = title;
 			p.date = date;

@@ -11,14 +11,17 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import vn.edu.hcmnlu.bean.DocsMappping;
+import vn.edu.hcmnlu.bean.Student;
 import vn.edu.hcmnlu.constants.Constants;
 import vn.edu.hcmnlu.elastic.ClientConnection;
 import vn.edu.hcmnlu.elastic.QueryCreation;
@@ -43,8 +46,9 @@ public class IndexController {
 	 * Simply selects the home view to render by returning its name.
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index() {
-		return "index";
+	@ResponseBody
+	public ResponseEntity<String> index() {
+		return new ResponseEntity<String>("OK", HttpStatus.OK);	
 	}
 	
 	@RequestMapping(value = "/getuploadpage", method = RequestMethod.GET)
@@ -60,7 +64,7 @@ public class IndexController {
 			e.printStackTrace();
 		}
 		QueryCreation query = new QueryCreation();
-		List<DocsMappping> data = query.responseData(clientConnection.getTransportClient(), Constants.INDICES, Constants.TYPE, keyword);
+		List<Student> data = query.responseData(clientConnection.getTransportClient(), Constants.INDICES, Constants.TYPE, keyword);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("list", data);
 		map.put("keyword", keyword);
@@ -71,7 +75,7 @@ public class IndexController {
 	public String upload(@RequestParam("file") MultipartFile file, @RequestParam("title") String title,
 			@RequestParam("description") String description, @RequestParam("author") String author,
 			HttpServletRequest request) {
-		DocsMappping docs = new DocsMappping();
+		Student docs = new Student();
 		String rootPath = context.getRealPath("") + File.separator + Constants.RESOURCE_PATH + File.separator;
 		docs.url = uploadService.saveFile(file, rootPath, file.getOriginalFilename());
 		docs.author = author;
