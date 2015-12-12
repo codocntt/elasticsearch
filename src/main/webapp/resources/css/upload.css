@@ -1,0 +1,29 @@
+h1{
+    top: 2%;
+    left: 30%;
+    position: absolute;
+}
+.main{
+    background: #A09D9E;
+    width: 600px;
+    height: 200px;
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    border: 1px solid red;
+	padding: 15px;
+}
+
+.main span{
+	float: left;
+	width: 60px;
+}
+
+.main input[type="text"]{
+	width: 200px;
+}
+
+.main > form > div.control-butotn{
+	margin-top: 20px;
+    text-align: center;
+}

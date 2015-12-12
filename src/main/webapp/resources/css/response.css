@@ -1,0 +1,34 @@
+.main-content {
+	margin-left: 90px;
+}
+
+.main-content>.content-search-part {
+	margin-top: 20px;
+}
+
+.main-content>.content-search-part>form>input[type="search"] {
+	width: 498px;
+	height: 26px;
+	padding: 15px;
+}
+
+.main-content>.content-search-part>form>input[type="submit"] {
+	height: 34px;
+	width: auto;
+}
+
+.main-content>.content{
+	margin-top: 30px;
+	float: left;
+	width: 600px;
+}
+
+
+.main-content>.content>span{
+	color: #1a0dab;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+    

@@ -1,0 +1,22 @@
+h2 {
+	top: 25%;
+	left: 30%;
+	position: absolute;
+}
+
+.content-search-part {
+	top: 35%;
+	left: 30%;
+	position: absolute;
+}
+
+.content-search-part>form>input[type="search"] {
+	width: 498px;
+	height: 26px;
+	padding: 15px;
+}
+
+.content-search-part>form>input[type="submit"] {
+	height: 34px;
+	width: auto;
+}
