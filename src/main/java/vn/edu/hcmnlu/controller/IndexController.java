@@ -1,6 +1,5 @@
 package vn.edu.hcmnlu.controller;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -8,8 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import vn.edu.hcmnlu.bean.Student;
-import vn.edu.hcmnlu.constants.Constants;
 import vn.edu.hcmnlu.elastic.ClientConnection;
+import vn.edu.hcmnlu.elastic.DocumentOperations;
+import vn.edu.hcmnlu.elastic.IndicesOperations;
+import vn.edu.hcmnlu.elastic.ManageMappingTemplate;
+import vn.edu.hcmnlu.elastic.MappingOperations;
 import vn.edu.hcmnlu.elastic.QueryCreation;
-import vn.edu.hcmnlu.upload.UploadService;
+import vn.edu.hcmnlu.util.Utils;
 
 /**
  * Handles requests for the application home page.
@@ -33,11 +35,25 @@ import vn.edu.hcmnlu.upload.UploadService;
 @Controller
 public class IndexController {
 	
+	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+	
+	//@Autowired
+	//private UploadService uploadService;
+	
 	@Autowired
-	private UploadService uploadService;
+	DocumentOperations documentOperations;
+	
+	@Autowired
+	IndicesOperations indicesOperations;
 	
 	@Autowired
     ServletContext context; 
+	
+	@Autowired
+	ManageMappingTemplate manageMappingTemplate;
+	
+	@Autowired
+	MappingOperations mappingOperations;
 	
 	@Autowired
 	private ClientConnection clientConnection;
@@ -47,31 +63,40 @@ public class IndexController {
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> index() {
+	public ResponseEntity<String> index() 
+	{
 		return new ResponseEntity<String>("OK", HttpStatus.OK);	
 	}
 	
-	@RequestMapping(value = "/getuploadpage", method = RequestMethod.GET)
-	public String getUploadPage() {
-		return "uploadPage";
+	@RequestMapping(value = "/indexing", method = RequestMethod.POST)
+	public void indexingDocument(@RequestParam(value="indexName") String indexName,
+								@RequestParam(value="typeName") String typeName,
+								@RequestParam(value="content") String content)
+	{
+		if(!indicesOperations.checkIndexExists(clientConnection.getTransportClient(), indexName)) 
+			manageMappingTemplate.createMappingTemplate(clientConnection.getTransportClient(), mappingOperations, indexName);
+		documentOperations.insertDocument(clientConnection.getTransportClient(), indexName, typeName, Utils.convertDocsToMap(Utils.convertStringToObject(typeName, content)));
 	}
 	
-	@RequestMapping(value = "/search", method = RequestMethod.GET)
-	public ModelAndView search(@RequestParam(value="keyword") String keyword) {
+	@RequestMapping(value = "/searching", method = RequestMethod.GET)
+	public ModelAndView search(@RequestParam(value="indexName") String indexName,
+							@RequestParam(value="typeName") String typeName,
+							@RequestParam(value="keyword") String keyword) 
+	{
 		try {
 			keyword = URLDecoder.decode(keyword,"UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("ERROR searching");
 		}
 		QueryCreation query = new QueryCreation();
-		List<Student> data = query.responseData(clientConnection.getTransportClient(), Constants.INDICES, Constants.TYPE, keyword);
+		List<Student> data = query.responseData(clientConnection.getTransportClient(), indexName, typeName, keyword);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("list", data);
 		map.put("keyword", keyword);
 		return new ModelAndView("response", map);
 	}
 	
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	/*@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public String upload(@RequestParam("file") MultipartFile file, @RequestParam("title") String title,
 			@RequestParam("description") String description, @RequestParam("author") String author,
 			HttpServletRequest request) {
@@ -83,6 +108,6 @@ public class IndexController {
 		docs.description = description;
 		uploadService.indexDocumentFileToES(clientConnection.getTransportClient(), docs,file);
 		return "index";
-	}
-
+	}*/
+	
 }

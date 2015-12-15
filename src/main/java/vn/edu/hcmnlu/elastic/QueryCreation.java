@@ -23,20 +23,14 @@ public class QueryCreation {
 		
 		List<Student> arr = new ArrayList<Student>();
 		
-		// check exist of indices
-		IndicesOperations indices = new IndicesOperations(client);
-		if(!indices.checkIndexExists(index)){
-			return arr;
-		}
-		
 		//prepare Query
 		QueryBuilder queryBuilder = QueryBuilders.boolQuery()
 							.should(QueryBuilders.matchQuery("title", keyword))
 							.should(QueryBuilders.matchQuery("author", keyword))
 							.should(QueryBuilders.matchQuery("date", keyword))
 							.should(QueryBuilders.matchQuery("description", keyword))
-							.should(QueryBuilders.matchQuery("document", keyword))
-							.should(QueryBuilders.matchQuery("filename", keyword));
+							.should(QueryBuilders.matchQuery("fileContent", keyword))
+							.should(QueryBuilders.matchQuery("fileName", keyword));
 		
 		SearchResponse response = client.prepareSearch(index).setTypes(type).setQuery(queryBuilder)
 										.addField("title")
@@ -46,8 +40,8 @@ public class QueryCreation {
 										.addHighlightedField("author")
 										.addHighlightedField("date")
 										.addHighlightedField("description")
-										.addHighlightedField("document")
-										.addHighlightedField("filename")
+										.addHighlightedField("fileContent")
+										.addHighlightedField("fileName")
 										.setHighlighterPreTags("<b>")
 										.setHighlighterPostTags("</b>")
 										.execute().actionGet();
@@ -60,7 +54,7 @@ public class QueryCreation {
 			Student p = new Student();
 			p.id = hit.getId();
 			p.title = title;
-			p.date = date;
+			p.saving_date = date;
 			p.author = author;
 			p.highlight = getHighlight(hit.getHighlightFields());
 			arr.add(p);
@@ -81,4 +75,5 @@ public class QueryCreation {
 		
 		return result.toString();
 	}
+	
 }

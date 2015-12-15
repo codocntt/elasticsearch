@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import vn.edu.hcmnlu.bean.Student;
 import vn.edu.hcmnlu.constants.Constants;
-import vn.edu.hcmnlu.elastic.ClientConnection;
 import vn.edu.hcmnlu.elastic.DocumentOperations;
 import vn.edu.hcmnlu.elastic.IndicesOperations;
 import vn.edu.hcmnlu.elastic.MappingOperations;
@@ -57,7 +56,7 @@ public class UploadService {
 
 	public boolean indexDocumentFileToES(Client client, Student docs, MultipartFile file) {
 		IndicesOperations indices = new IndicesOperations(client);
-		if (!indices.checkIndexExists(Constants.INDICES)) {
+		//if (!indices.checkIndexExists(Constants.INDICES)) {
 			// indices.createIndex(Contants.INDICES);
 			try {
 				// XContentBuilder mappingBuilder = jsonBuilder()
@@ -95,13 +94,13 @@ public class UploadService {
 		try {
 			String encoded = DatatypeConverter.printBase64Binary(file
 					.getBytes());
-			docs.document = encoded;
-			docs.date = String.valueOf(new Date());
-			docs.filename = file.getOriginalFilename();
-			docs.typeofdocument = file.getContentType();
-			DocumentOperations docop = new DocumentOperations(client);
-			docop.insertDocument(Constants.INDICES, Constants.TYPE,
-					convertDocsToMap(docs));
+			docs.fileContent = encoded;
+			docs.saving_date = String.valueOf(new Date());
+			docs.fileName = file.getOriginalFilename();
+			docs.fileType = file.getContentType();
+			//DocumentOperations docop = new DocumentOperations(client);
+			//docop.insertDocument(Constants.INDICES, Constants.TYPE,
+			//		convertDocsToMap(docs));
 		} catch (IOException e) {
 			logger.error("ERROR:" + e.getMessage());
 			return false;
@@ -109,7 +108,7 @@ public class UploadService {
 		return true;
 	}
 
-	private Map<String, Object> convertDocsToMap(Student docs) {
+	private Map<String, Object> convertDocsToMap(Object docs) {
 		Map<String, Object> maps = new HashMap<String, Object>();
 		Class<?> cls = docs.getClass();
 		Field fieldlist[] = cls.getDeclaredFields();
