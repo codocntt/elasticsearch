@@ -1,10 +1,23 @@
 {
-	"analysis": {
-	  "analyzer": {
-	    "folding": {
-	      "tokenizer": "standard",
-	      "filter":  [ "lowercase", "asciifolding" ]
-	    }
-	  }
-	}
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "folding": {
+          "tokenizer": "standard",
+          "filter":  [ "lowercase", "asciifolding" ]
+        },
+         "myNGramAnalyzer": { 
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase", "myNGramFilter"]
+      	},
+      	 "filter": { 
+        "myNGramFilter": {
+          "type": "edgeNGram",
+          "min_gram": 1,
+          "max_gram": 40 
+      }}
+      }
+    }
+  }
 }

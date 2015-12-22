@@ -1,10 +1,7 @@
 package vn.edu.hcmnlu.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 
@@ -18,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
+import vn.edu.hcmnlu.bean.ResponseData;
 import vn.edu.hcmnlu.bean.Student;
 import vn.edu.hcmnlu.elastic.ClientConnection;
 import vn.edu.hcmnlu.elastic.DocumentOperations;
@@ -28,6 +25,8 @@ import vn.edu.hcmnlu.elastic.ManageMappingTemplate;
 import vn.edu.hcmnlu.elastic.MappingOperations;
 import vn.edu.hcmnlu.elastic.QueryCreation;
 import vn.edu.hcmnlu.util.Utils;
+
+import com.google.gson.Gson;
 
 /**
  * Handles requests for the application home page.
@@ -71,29 +70,26 @@ public class IndexController {
 	@RequestMapping(value = "/indexing", method = RequestMethod.POST)
 	public void indexingDocument(@RequestParam(value="indexName") String indexName,
 								@RequestParam(value="typeName") String typeName,
-								@RequestParam(value="content") String content)
+								@RequestParam(value="content") String content) throws UnsupportedEncodingException
 	{
+		System.out.println("done");
 		if(!indicesOperations.checkIndexExists(clientConnection.getTransportClient(), indexName)) 
 			manageMappingTemplate.createMappingTemplate(clientConnection.getTransportClient(), mappingOperations, indexName);
 		documentOperations.insertDocument(clientConnection.getTransportClient(), indexName, typeName, Utils.convertDocsToMap(Utils.convertStringToObject(typeName, content)));
 	}
 	
-	@RequestMapping(value = "/searching", method = RequestMethod.GET)
-	public ModelAndView search(@RequestParam(value="indexName") String indexName,
+	@RequestMapping(value = "/searching", method = RequestMethod.POST, produces={"application/json; charset=UTF-8"})
+	@ResponseBody
+	public String search(@RequestParam(value="indexName") String indexName,
 							@RequestParam(value="typeName") String typeName,
 							@RequestParam(value="keyword") String keyword) 
 	{
-		try {
-			keyword = URLDecoder.decode(keyword,"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			logger.error("ERROR searching");
-		}
+		ResponseData response = new ResponseData();
 		QueryCreation query = new QueryCreation();
 		List<Student> data = query.responseData(clientConnection.getTransportClient(), indexName, typeName, keyword);
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("list", data);
-		map.put("keyword", keyword);
-		return new ModelAndView("response", map);
+		response.size = data.size();
+		response.data = data;
+		return new Gson().toJson(response);
 	}
 	
 	/*@RequestMapping(value = "/upload", method = RequestMethod.POST)

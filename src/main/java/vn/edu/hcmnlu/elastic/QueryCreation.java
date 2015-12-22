@@ -27,18 +27,16 @@ public class QueryCreation {
 		QueryBuilder queryBuilder = QueryBuilders.boolQuery()
 							.should(QueryBuilders.matchQuery("title", keyword))
 							.should(QueryBuilders.matchQuery("author", keyword))
-							.should(QueryBuilders.matchQuery("date", keyword))
 							.should(QueryBuilders.matchQuery("description", keyword))
 							.should(QueryBuilders.matchQuery("fileContent", keyword))
 							.should(QueryBuilders.matchQuery("fileName", keyword));
 		
 		SearchResponse response = client.prepareSearch(index).setTypes(type).setQuery(queryBuilder)
 										.addField("title")
-										.addField("date")
+										.addField("saving_date")
 										.addField("author")
 										.addHighlightedField("title")
 										.addHighlightedField("author")
-										.addHighlightedField("date")
 										.addHighlightedField("description")
 										.addHighlightedField("fileContent")
 										.addHighlightedField("fileName")
@@ -49,7 +47,7 @@ public class QueryCreation {
 		for(SearchHit hit : response.getHits().getHits()){
 			Map<String, SearchHitField> maps = hit.getFields();
 			String title = maps.get("title").value();
-			String date = maps.get("date").value();
+			String date = maps.get("saving_date").value();
 			String author = maps.get("author").value();
 			Student p = new Student();
 			p.id = hit.getId();

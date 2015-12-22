@@ -1,29 +1,72 @@
-{
-        "doc":{
-            "properties": {
-                "title":{
-                    "type": "string",
-                    "analyzer": "folding"
-                },
-                 "description":{
-                    "type": "string",
-                    "analyzer": "folding"
-                },
-                "author":{
-                	 "type": "string",
-                    "analyzer": "folding"
-                },
-                "document": {
-                     "type": "attachment",
-                        "fields": {
-                            "document": {
-                                "analyzer": "folding",      
-                                "type": "string",
-                                 "term_vector":"with_positions_offsets",
-                                "store": "true"
-                                    }
-                                }
-                         }
-                }
-        }
+{  
+   "doc":{  
+      "properties":{  
+         "id":{  
+            "type":"string"
+         },
+         "title":{  
+            "type":"string",
+            "analyzer":"standard",
+            "fields":{  
+               "folded":{  
+                  "type":"string",
+                  "analyzer":"folding"
+               }
+            }
+         },
+         "description":{  
+            "type":"string",
+            "analyzer":"standard",
+            "fields":{  
+               "folded":{  
+                  "type":"string",
+                  "analyzer":"folding"
+               }
+            }
+         },
+         "author":{  
+            "type":"string",
+            "analyzer":"standard",
+            "fields":{  
+               "folded":{  
+                  "type":"string",
+                  "analyzer":"folding"
+               }
+            }
+         },
+         "saving_date":{  
+            "type":"string"
+         },
+         "keyword":{  
+            "type":"string",
+            "index_analyzer":"myNGramAnalyzer",
+            "search_analyzer":"standard"
+         },
+         "fileName":{  
+            "type":"string",
+             "analyzer":"standard",
+            "fields":{  
+               "folded":{  
+                  "type":"string",
+                  "analyzer":"folding"
+               }
+            }
+         },
+         "fileType":{  
+            "type":"string"
+         },
+         "fileContent":{  
+            "type":"attachment",
+             "analyzer":"standard",
+            "fields":{  
+               "fileContent":{  
+                  "analyzer":"folding",
+                  "type":"string",
+                  "term_vector":"with_positions_offsets",
+                  "store":"false"
+               }
+            }
+         }
+      }
+   }
 }
