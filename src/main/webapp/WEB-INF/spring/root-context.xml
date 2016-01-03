@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<!-- Root Context: defines shared resources visible to all other web components -->
 
@@ -20,6 +22,11 @@
 		<property name="clusterPort" value="9300"/>
 	</bean>
 	
-	<bean id="documentOperations" class="vn.edu.hcmnlu.elastic.DocumentOperations" />
+	<bean id="indicesOperations" class="vn.edu.hcmnlu.elastic.IndicesOperations" init-method="createIndex">
+		<property name="name" value="${indice.name}"/>
+		<property name="clientConnection" ref="clientConnection" />
+	</bean>
+	
+	<context:property-placeholder location="classpath:resource.properties"/>
 	
 </beans>

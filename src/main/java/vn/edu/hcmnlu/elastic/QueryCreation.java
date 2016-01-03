@@ -8,40 +8,42 @@ import java.util.Set;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.text.Text;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.highlight.HighlightField;
 
-import vn.edu.hcmnlu.bean.Student;
+import vn.edu.hcmnlu.bean.User;
 
 
 public class QueryCreation {
 	
-	public List<Student> responseData(Client client, String index, String type, String keyword) {
+	public List<User> responseData(Client client, String index, String type, String keyword) {
 		
-		List<Student> arr = new ArrayList<Student>();
+		List<User> arr = new ArrayList<User>();
 		
 		//prepare Query
-		QueryBuilder queryBuilder = QueryBuilders.boolQuery()
+		/*QueryBuilder queryBuilder = QueryBuilders.boolQuery()
 							.should(QueryBuilders.matchQuery("title", keyword))
 							.should(QueryBuilders.matchQuery("author", keyword))
 							.should(QueryBuilders.matchQuery("description", keyword))
 							.should(QueryBuilders.matchQuery("fileContent", keyword))
-							.should(QueryBuilders.matchQuery("fileName", keyword));
+							.should(QueryBuilders.matchQuery("fileName", keyword));*/
 		
-		SearchResponse response = client.prepareSearch(index).setTypes(type).setQuery(queryBuilder)
+		MultiMatchQueryBuilder matchQueryBuilder = 
+				new MultiMatchQueryBuilder(keyword, "title","title.folded");
+		
+		SearchResponse response = client.prepareSearch(index).setTypes(type).setQuery(matchQueryBuilder)
 										.addField("title")
 										.addField("saving_date")
 										.addField("author")
-										.addHighlightedField("title")
-										.addHighlightedField("author")
-										.addHighlightedField("description")
-										.addHighlightedField("fileContent")
-										.addHighlightedField("fileName")
-										.setHighlighterPreTags("<b>")
-										.setHighlighterPostTags("</b>")
+//										.addHighlightedField("title")
+//										.addHighlightedField("author")
+//										.addHighlightedField("description")
+//										.addHighlightedField("fileContent")
+//										.addHighlightedField("fileName")
+//										.setHighlighterPreTags("<b>")
+//										.setHighlighterPostTags("</b>")
 										.execute().actionGet();
 		
 		for(SearchHit hit : response.getHits().getHits()){
@@ -49,13 +51,6 @@ public class QueryCreation {
 			String title = maps.get("title").value();
 			String date = maps.get("saving_date").value();
 			String author = maps.get("author").value();
-			Student p = new Student();
-			p.id = hit.getId();
-			p.title = title;
-			p.saving_date = date;
-			p.author = author;
-			p.highlight = getHighlight(hit.getHighlightFields());
-			arr.add(p);
 		}
 		return arr;
 	}

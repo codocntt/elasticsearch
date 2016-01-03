@@ -1,23 +1,29 @@
-{
-  "settings": {
-    "analysis": {
-      "analyzer": {
-        "folding": {
-          "tokenizer": "standard",
-          "filter":  [ "lowercase", "asciifolding" ]
-        },
-         "myNGramAnalyzer": { 
-          "type": "custom",
-          "tokenizer": "standard",
-          "filter": ["lowercase", "myNGramFilter"]
-      	},
-      	 "filter": { 
-        "myNGramFilter": {
-          "type": "edgeNGram",
-          "min_gram": 1,
-          "max_gram": 40 
-      }}
+{  
+   "settings":{  
+      "number_of_shards":5,
+      "number_of_replicas":1,
+      "index":{  
+         "analysis":{  
+            "char_filter":{  
+               "my_pattern":{  
+                  "type":"pattern_replace",
+                  "pattern":"&",
+                  "replacement":" bbb "
+               }
+            },
+            "analyzer":{  
+               "folding":{  
+                  "tokenizer":"standard",
+                  "filter":[  
+                     "lowercase",
+                     "asciifolding"
+                  ],
+                  "char_filter":[  
+                     "my_pattern"
+                  ]
+               }
+            }
+         }
       }
-    }
-  }
+   }
 }
